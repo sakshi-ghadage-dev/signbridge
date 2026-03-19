@@ -1,0 +1,81 @@
+.supported-gestures-section {
+  padding: 86px 0;
+  background: #f7fbf9;
+}
+
+.gesture-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  margin-bottom: 16px;
+  border-radius: 999px;
+  background: rgba(244, 161, 36, 0.12);
+  border: 1px solid rgba(244, 161, 36, 0.18);
+  color: #d48806;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.gesture-badge span {
+  color: var(--accent-orange);
+}
+
+.gesture-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-top: 36px;
+}
+
+.gesture-card {
+  padding: 22px 16px;
+  text-align: center;
+  border-radius: 18px;
+  background: white;
+  border: 1px solid rgba(47, 143, 134, 0.08);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.gesture-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+
+.gesture-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: rgba(47, 143, 134, 0.08);
+  font-size: 1.6rem;
+}
+
+.gesture-card h3 {
+  margin: 0 0 6px;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #202020;
+}
+
+.gesture-card p {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--accent-teal);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .supported-gestures-section {
+    padding: 64px 0;
+  }
+
+  .gesture-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

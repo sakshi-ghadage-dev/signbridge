@@ -1,0 +1,55 @@
+.problem-section {
+  padding: 90px 0;
+  background: #edf7f3;
+}
+
+.problem-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
+  margin-top: 40px;
+}
+
+.problem-card {
+  padding: 28px;
+  border-radius: 22px;
+  background: white;
+  border: 1px solid rgba(47, 143, 134, 0.08);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+}
+
+.problem-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 🔴 Problem */
+.problem-card:nth-child(1) {
+  background: rgba(255, 77, 79, 0.05);
+  border-left: 4px solid #ff4d4f;
+}
+
+/* 🟢 Solution (LIGHT highlight, no dark) */
+.problem-card.highlight {
+  background: rgba(47, 143, 134, 0.08);
+  border-left: 4px solid #2f8f86;
+}
+
+/* 🔵 Why Better */
+.problem-card:nth-child(3) {
+  background: rgba(49, 130, 206, 0.05);
+  border-left: 4px solid #3182ce;
+}
+
+.problem-card h3 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.problem-card p {
+  line-height: 1.7;
+  color: var(--text-secondary);
+}

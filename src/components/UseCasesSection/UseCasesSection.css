@@ -1,0 +1,127 @@
+.usecases-section {
+  padding: 80px 0;
+  background: var(--bg-secondary);
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 64px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.section-title {
+  font-size: 40px;
+  font-weight: 800;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.section-subtitle {
+  font-size: 22px;
+  color: var(--accent-teal);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.section-description {
+  font-size: 16px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.usecases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 64px;
+}
+
+.usecase-card {
+  background: white;
+  padding: 40px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.usecase-card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-orange);
+}
+
+.usecase-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.usecase-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.usecase-description {
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.cta-section {
+  display: flex;
+  justify-content: center;
+}
+
+.cta-card {
+  background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-blue) 100%);
+  padding: 48px;
+  border-radius: var(--radius-xl);
+  text-align: center;
+  color: white;
+  max-width: 600px;
+  box-shadow: var(--shadow-lg);
+}
+
+.cta-card h3 {
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 16px;
+}
+
+.cta-card p {
+  font-size: 16px;
+  margin-bottom: 24px;
+  opacity: 0.95;
+}
+
+.cta-card .btn {
+  background: white;
+  color: var(--accent-teal);
+  font-weight: 700;
+}
+
+.cta-card .btn:hover {
+  background: var(--bg-secondary);
+}
+
+@media (max-width: 768px) {
+  .section-title {
+    font-size: 32px;
+  }
+
+  .usecases-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-card {
+    padding: 32px 24px;
+  }
+
+  .cta-card h3 {
+    font-size: 24px;
+  }
+}

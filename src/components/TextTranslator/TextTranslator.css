@@ -1,0 +1,167 @@
+.text-translator {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.translator-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.input-section,
+.output-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.language-selector {
+  display: flex;
+  gap: 8px;
+  background: var(--bg-secondary);
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.lang-btn {
+  padding: 6px 16px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.lang-btn.active {
+  background: white;
+  color: var(--accent-teal);
+  box-shadow: var(--shadow-sm);
+}
+
+.text-input {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-family: inherit;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--accent-teal);
+}
+
+.input-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.input-actions .btn {
+  flex: 1;
+}
+
+.output-section {
+  padding-top: 32px;
+  border-top: 2px solid var(--border-color);
+}
+
+.translation-output,
+.sign-output {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.output-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.translation-output h4,
+.sign-output h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.mini-action-btn {
+  border: none;
+  background: white;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  padding: 8px 10px;
+}
+
+.output-text {
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--accent-teal);
+  min-height: 80px;
+}
+
+.sign-description {
+  padding: 20px;
+  background: rgba(255, 149, 0, 0.1);
+  border-radius: var(--radius-md);
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  min-height: 120px;
+}
+
+.empty-output {
+  padding: 20px;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  text-align: center;
+  font-style: italic;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 576px) {
+  .translator-card {
+    padding: 20px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .input-actions {
+    flex-direction: column;
+  }
+}
