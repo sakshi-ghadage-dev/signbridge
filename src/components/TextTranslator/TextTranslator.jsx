@@ -39,25 +39,75 @@ function TextTranslator({ language }) {
   const handleTranslate = () => {
     if (!inputText.trim()) return;
 
+    const sanitizedInput = inputText.trim();
+    const hasDevanagari = /[\u0900-\u097F]/.test(sanitizedInput);
+    const sourceLang = inputLanguage === 'mr' || hasDevanagari ? 'mr' : 'en';
+
+    // 🔤 UI Translation & Description
     const translated =
-      inputLanguage === 'en'
-        ? translateToMarathi(inputText)
-        : translateToEnglish(inputText);
+      sourceLang === 'en'
+        ? translateToMarathi(sanitizedInput)
+        : translateToEnglish(sanitizedInput);
 
     setTranslatedText(translated);
-    setSignDescription(getSignDescription(inputText));
+    setSignDescription(getSignDescription(sourceLang === 'mr' ? translated : sanitizedInput));
 
     // 🔄 RESET PLAYER
     clearTimeout(timeoutRef.current);
     setCurrentIndex(0);
 
+    let processingText = sanitizedInput;
+
+    // 🔥 MARATHI INPUT HANDLING
+    if (sourceLang === 'mr') {
+      const eng = translateToEnglish(sanitizedInput);
+      console.log('Detected Marathi input, translation candidate:', eng);
+
+      if (eng && /[a-zA-Z]/.test(eng) && eng.toLowerCase() !== sanitizedInput.toLowerCase()) {
+        processingText = eng;
+      } else {
+        // 🔥 FALLBACK MANUAL MAP
+        const fallbackMap = {
+          नमस्कार: 'hello',
+          मदत: 'help',
+          धन्यवाद: 'thankyou',
+          शुभ: 'good',
+          सकाळ: 'morning',
+          रात्र: 'night',
+          हो: 'yes',
+          नाही: 'no',
+          प्रेम: 'love',
+        };
+
+        const words = sanitizedInput.split(/\s+/).map((w) => w.trim()).filter(Boolean);
+        const mappedWords = words.map((w) => fallbackMap[w]).filter(Boolean);
+
+        if (mappedWords.length > 0) {
+          processingText = mappedWords.join(' ');
+          console.log('Using fallback mapping:', processingText);
+        } else if (eng && /[a-zA-Z]/.test(eng)) {
+          processingText = eng;
+        } else {
+          processingText = 'hello';
+        }
+      }
+    }
+
+    console.log('Final Processing Text:', processingText);
+
     // 🔥 CLEAN TEXT
-    const clean = inputText.toLowerCase().replace(/[^a-z0-9 ]/g, '');
+    const clean = processingText.toLowerCase().replace(/[^a-z0-9 ]/g, '');
 
     let result = [];
 
-    // 🔥 SPLIT WORDS
-    const words = clean.split(' ');
+    // Check if entire phrase (without spaces) is a single word GIF
+    const noSpace = clean.replace(/\s+/g, '');
+    let words;
+    if (wordGifs.includes(noSpace)) {
+      words = [noSpace];
+    } else {
+      words = clean.split(' ').map((w) => w.trim()).filter((w) => w.length > 0);
+    }
 
     words.forEach((word, index) => {
       if (!word) return;
@@ -86,6 +136,8 @@ function TextTranslator({ language }) {
         });
       }
     });
+
+    console.log('Generated Sequence:', result);
 
     setSequence(result);
     setIsPlaying(true);
