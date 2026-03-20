@@ -5,11 +5,11 @@ import { translateToMarathi, speakText } from '../../utils/translationUtils';
 function WebcamFeed({ language }) {
 
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
+  const canvasRef = useRef(null); // ML canvas (hidden)
+  const isProcessingRef = useRef(false);
 
   const predictionHistoryRef = useRef([]);
   const lastLetterRef = useRef("");
-  const isProcessingRef = useRef(false); // ✅ prevents overlap
 
   const [cameraOn, setCameraOn] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ function WebcamFeed({ language }) {
   const [error, setError] = useState("");
 
   /////////////////////////
-  // 🚀 API CALL
+  // 🚀 API
   /////////////////////////
   async function sendFrameAsync(formData) {
     try {
@@ -44,7 +44,7 @@ function WebcamFeed({ language }) {
   }
 
   /////////////////////////
-  // 🔥 60 FPS LOOP (UI)
+  // 🔥 60 FPS LOOP
   /////////////////////////
   function startProcessing() {
 
@@ -58,15 +58,14 @@ function WebcamFeed({ language }) {
         return;
       }
 
+      // 🎯 Only ML canvas is resized (NOT video)
       const ctx = canvas.getContext("2d");
-
-      // 🎯 Keep camera smooth (no resizing UI canvas frequently)
       canvas.width = 224;
       canvas.height = 224;
 
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, 0, 0, 224, 224);
 
-      // 🧠 CALL BACKEND ONLY IF FREE
+      // 🧠 Send only if free
       if (!isProcessingRef.current) {
         isProcessingRef.current = true;
 
@@ -81,23 +80,20 @@ function WebcamFeed({ language }) {
 
           await sendFrameAsync(formData);
 
-          // ⏳ small delay → prevents overload (~8–10 FPS backend)
           setTimeout(() => {
             isProcessingRef.current = false;
-          }, 120);
-
-        }, "image/jpeg", 0.5);
+          }, 100); // ~10 FPS backend
+        }, "image/jpeg", 0.7); // 🔥 better quality
       }
 
-      // 🔥 THIS MAKES UI 60 FPS
-      requestAnimationFrame(processFrame);
+      requestAnimationFrame(processFrame); // 🔥 smooth UI
     };
 
     processFrame();
   }
 
   /////////////////////////
-  // 🎥 CAMERA CONTROL
+  // 🎥 CAMERA
   /////////////////////////
   useEffect(() => {
 
@@ -109,9 +105,9 @@ function WebcamFeed({ language }) {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
-            width: { ideal: 640 },
-            height: { ideal: 480 },
-            frameRate: { ideal: 60 } // 🔥 request 60 FPS
+            width: { ideal: 1280 },   // 🔥 HD
+            height: { ideal: 720 },   // 🔥 HD
+            frameRate: { ideal: 60 }  // 🔥 smooth
           },
           audio: false,
         });
@@ -132,16 +128,9 @@ function WebcamFeed({ language }) {
     };
 
     const stopCamera = () => {
-
       if (videoRef.current && videoRef.current.srcObject) {
         videoRef.current.srcObject.getTracks().forEach(track => track.stop());
         videoRef.current.srcObject = null;
-      }
-
-      const canvas = canvasRef.current;
-      if (canvas) {
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
       }
     };
 
@@ -153,7 +142,7 @@ function WebcamFeed({ language }) {
   }, [cameraOn]);
 
   /////////////////////////
-  // 🧠 STABILITY LOGIC
+  // 🧠 STABILITY
   /////////////////////////
   function handleStablePrediction(data) {
 
@@ -184,9 +173,7 @@ function WebcamFeed({ language }) {
 
       let output = stable;
 
-      if (stable === "space") {
-        output = " ";
-      }
+      if (stable === "space") output = " ";
       else if (stable === "del") {
         setSentence(prev => prev.slice(0, -1));
         lastLetterRef.current = stable;
@@ -195,7 +182,6 @@ function WebcamFeed({ language }) {
 
       setCurrentLetter(output);
       setSentence(prev => prev + output);
-
       setMarathiText(translateToMarathi(stable));
 
       lastLetterRef.current = stable;
@@ -222,8 +208,17 @@ function WebcamFeed({ language }) {
       <div className="webcam-container">
         <div className="video-wrapper">
 
-          <video ref={videoRef} className="canvas-element live-video" autoPlay muted playsInline />
-          <canvas ref={canvasRef} className="canvas-element overlay-canvas" />
+          {/* 🔥 FULL HD VIDEO */}
+          <video
+            ref={videoRef}
+            className="canvas-element live-video"
+            autoPlay
+            muted
+            playsInline
+          />
+
+          {/* 🧠 HIDDEN ML CANVAS */}
+          <canvas ref={canvasRef} style={{ display: "none" }} />
 
           {!cameraOn && (
             <div className="camera-placeholder">
@@ -258,7 +253,6 @@ function WebcamFeed({ language }) {
       </div>
 
       <div className="translation-panel">
-
         <div className="panel-header">
           <h3>{language === 'mr' ? 'अनुवाद आउटपुट' : 'Translation Output'}</h3>
         </div>
