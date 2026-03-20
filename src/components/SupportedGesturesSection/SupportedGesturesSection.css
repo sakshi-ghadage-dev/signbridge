@@ -1,6 +1,41 @@
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes wave {
+  0%, 100% {
+    transform: rotateZ(0deg);
+  }
+  25% {
+    transform: rotateZ(-10deg);
+  }
+  75% {
+    transform: rotateZ(10deg);
+  }
+}
+
 .supported-gestures-section {
   padding: 86px 0;
   background: #f7fbf9;
+  position: relative;
 }
 
 .gesture-badge {
@@ -10,12 +45,20 @@
   padding: 8px 14px;
   margin-bottom: 16px;
   border-radius: 999px;
-  background: rgba(244, 161, 36, 0.12);
-  border: 1px solid rgba(244, 161, 36, 0.18);
+  background: rgba(244, 161, 36, 0.15);
+  border: 2px solid rgba(244, 161, 36, 0.3);
   color: #d48806;
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.04em;
+  animation: slideUp 0.6s ease-out;
+  transition: all 0.3s ease;
+}
+
+.gesture-badge:hover {
+  background: rgba(244, 161, 36, 0.25);
+  border-color: rgba(244, 161, 36, 0.5);
+  transform: translateY(-2px);
 }
 
 .gesture-badge span {
@@ -34,14 +77,17 @@
   text-align: center;
   border-radius: 18px;
   background: white;
-  border: 1px solid rgba(47, 143, 134, 0.08);
+  border: 2px solid rgba(47, 143, 134, 0.12);
   box-shadow: var(--shadow-sm);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: popIn 0.5s ease-out;
 }
 
 .gesture-card:hover {
-  transform: translateY(-5px);
-  box-shadow: var(--shadow-md);
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 16px 32px rgba(47, 143, 134, 0.15);
+  border-color: rgba(47, 143, 134, 0.25);
+  background: linear-gradient(135deg, #ffffff 0%, rgba(47, 143, 134, 0.03) 100%);
 }
 
 .gesture-icon {
@@ -51,8 +97,16 @@
   display: grid;
   place-items: center;
   border-radius: 16px;
-  background: rgba(47, 143, 134, 0.08);
+  background: linear-gradient(135deg, rgba(47, 143, 134, 0.12), rgba(244, 161, 36, 0.08));
   font-size: 1.6rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(47, 143, 134, 0.1);
+}
+
+.gesture-card:hover .gesture-icon {
+  transform: scale(1.2) rotate(12deg);
+  background: linear-gradient(135deg, rgba(47, 143, 134, 0.2), rgba(244, 161, 36, 0.15));
+  box-shadow: 0 8px 20px rgba(47, 143, 134, 0.18);
 }
 
 .gesture-card h3 {
@@ -61,6 +115,7 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: #202020;
+  transition: color 0.3s ease;
 }
 
 .gesture-card p {
@@ -68,6 +123,15 @@
   font-size: 0.92rem;
   color: var(--accent-teal);
   font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.gesture-card:hover h3 {
+  color: var(--accent-orange);
+}
+
+.gesture-card:hover p {
+  color: var(--accent-orange);
 }
 
 @media (max-width: 640px) {

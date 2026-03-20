@@ -5,7 +5,7 @@ import { translateToMarathi, speakText } from '../../utils/translationUtils';
 function WebcamFeed({ language }) {
 
   const videoRef = useRef(null);
-  const canvasRef = useRef(null); // ML canvas (hidden)
+  const canvasRef = useRef(null);
   const isProcessingRef = useRef(false);
 
   const predictionHistoryRef = useRef([]);
@@ -19,6 +19,9 @@ function WebcamFeed({ language }) {
   const [marathiText, setMarathiText] = useState("");
   const [confidence, setConfidence] = useState(0);
   const [error, setError] = useState("");
+
+  // 🆕 history
+  const [history, setHistory] = useState([]);
 
   /////////////////////////
   // 🚀 API
@@ -58,14 +61,12 @@ function WebcamFeed({ language }) {
         return;
       }
 
-      // 🎯 Only ML canvas is resized (NOT video)
       const ctx = canvas.getContext("2d");
       canvas.width = 224;
       canvas.height = 224;
 
       ctx.drawImage(video, 0, 0, 224, 224);
 
-      // 🧠 Send only if free
       if (!isProcessingRef.current) {
         isProcessingRef.current = true;
 
@@ -82,11 +83,11 @@ function WebcamFeed({ language }) {
 
           setTimeout(() => {
             isProcessingRef.current = false;
-          }, 100); // ~10 FPS backend
-        }, "image/jpeg", 0.7); // 🔥 better quality
+          }, 100);
+        }, "image/jpeg", 0.7);
       }
 
-      requestAnimationFrame(processFrame); // 🔥 smooth UI
+      requestAnimationFrame(processFrame);
     };
 
     processFrame();
@@ -105,9 +106,9 @@ function WebcamFeed({ language }) {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
-            width: { ideal: 1280 },   // 🔥 HD
-            height: { ideal: 720 },   // 🔥 HD
-            frameRate: { ideal: 60 }  // 🔥 smooth
+            width: { ideal: 1280 },
+            height: { ideal: 720 },
+            frameRate: { ideal: 60 }
           },
           audio: false,
         });
@@ -200,6 +201,21 @@ function WebcamFeed({ language }) {
   };
 
   /////////////////////////
+  // 🆕 UI FUNCTIONS
+  /////////////////////////
+  const removeLastLetter = () => {
+    setSentence(prev => prev.slice(0, -1));
+  };
+
+  const completeSentence = () => {
+    if (!sentence.trim()) return;
+
+    setHistory(prev => [sentence, ...prev]);
+    setSentence("");
+    setCurrentLetter("");
+  };
+
+  /////////////////////////
   // 🎨 UI
   /////////////////////////
   return (
@@ -208,7 +224,6 @@ function WebcamFeed({ language }) {
       <div className="webcam-container">
         <div className="video-wrapper">
 
-          {/* 🔥 FULL HD VIDEO */}
           <video
             ref={videoRef}
             className="canvas-element live-video"
@@ -217,7 +232,6 @@ function WebcamFeed({ language }) {
             playsInline
           />
 
-          {/* 🧠 HIDDEN ML CANVAS */}
           <canvas ref={canvasRef} style={{ display: "none" }} />
 
           {!cameraOn && (
@@ -259,37 +273,69 @@ function WebcamFeed({ language }) {
 
         <div className="output-display">
 
-          {currentLetter ? (
-            <>
-              <div className="detected-sign">
-                <span className="label">Detected Letter</span>
-                <span className="text">
-                  {currentLetter === " " ? "␣ (space)" : currentLetter}
-                </span>
-              </div>
+          {/* Always visible */}
+          <div className="detected-sign">
+            <span className="label">Detected Letter</span>
+            <span className="text">
+              {currentLetter
+                ? (currentLetter === " " ? "␣ (space)" : currentLetter)
+                : "—"}
+            </span>
+          </div>
 
-              <div className="marathi-translation">
-                <span className="label">Sentence</span>
-                <span className="text">{sentence}</span>
-              </div>
+          <div className="marathi-translation">
+            <span className="label">Sentence</span>
+            <span className="text">
+              {sentence || (language === 'mr' ? 'जेश्चरची प्रतीक्षा...' : 'Waiting for gesture...')}
+            </span>
+          </div>
 
-              <div className="confidence-bar">
-                <span className="label">Confidence</span>
-                <div className="progress">
-                  <div className="progress-fill" style={{ width: `${confidence}%` }}></div>
-                </div>
-                <span className="percentage">{confidence}%</span>
-              </div>
-
-              <button className="btn btn-secondary speak-btn" onClick={speakDetected}>
-                🔊 Speak
-              </button>
-            </>
-          ) : (
-            <div className="empty-state">
-              <p>{language === 'mr' ? 'जेश्चरची प्रतीक्षा...' : 'Waiting for gesture...'}</p>
+          <div className="confidence-bar">
+            <span className="label">Confidence</span>
+            <div className="progress">
+              <div className="progress-fill" style={{ width: `${confidence}%` }}></div>
             </div>
-          )}
+            <span className="percentage">{confidence}%</span>
+          </div>
+
+          {/* Controls */}
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px", flexWrap: "wrap" }}>
+
+            <button className="btn btn-secondary" onClick={removeLastLetter}>
+              ⌫ Delete
+            </button>
+
+            <button className="btn btn-success" onClick={completeSentence}>
+              ✅ Complete
+            </button>
+
+            <button className="btn btn-secondary speak-btn" onClick={speakDetected}>
+              🔊 Speak
+            </button>
+
+          </div>
+
+          {/* History */}
+          <div style={{ marginTop: "20px" }}>
+            <span className="label">History</span>
+
+            {history.length === 0 ? (
+              <p style={{ opacity: 0.6 }}>No sentences yet</p>
+            ) : (
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {history.map((item, index) => (
+                  <li key={index} style={{
+                    background: "#f5f5f5",
+                    padding: "8px",
+                    borderRadius: "8px",
+                    marginTop: "5px"
+                  }}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
 
         </div>
       </div>
