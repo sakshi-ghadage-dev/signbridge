@@ -85,4 +85,4 @@ function FeaturesSection({ language }) {
 }
 
 export default FeaturesSection;
-
+

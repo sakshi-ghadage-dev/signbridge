@@ -13,17 +13,29 @@ function TextTranslator({ language }) {
   const [signDescription, setSignDescription] = useState('');
   const [inputLanguage, setInputLanguage] = useState('en');
 
-  // 🔥 NEW STATES (GIF PLAYER)
+  // 🔥 GIF PLAYER STATES
   const [sequence, setSequence] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
   const timeoutRef = useRef(null);
 
-  /////////////////////////
-  // 🔄 TRANSLATE + GENERATE GIF
-  /////////////////////////
+  // 🔥 AVAILABLE WORD GIFS
+  const wordGifs = [
+    'hello',
+    'help',
+    'thankyou',
+    'good',
+    'morning',
+    'night',
+    'yes',
+    'no',
+    'love',
+  ];
 
+  /////////////////////////
+  // 🔄 TRANSLATE + GENERATE SEQUENCE
+  /////////////////////////
   const handleTranslate = () => {
     if (!inputText.trim()) return;
 
@@ -35,7 +47,7 @@ function TextTranslator({ language }) {
     setTranslatedText(translated);
     setSignDescription(getSignDescription(inputText));
 
-    // 🔥 RESET PLAYER
+    // 🔄 RESET PLAYER
     clearTimeout(timeoutRef.current);
     setCurrentIndex(0);
 
@@ -44,13 +56,35 @@ function TextTranslator({ language }) {
 
     let result = [];
 
-    clean.split('').forEach((char) => {
-      if (char === ' ') return;
+    // 🔥 SPLIT WORDS
+    const words = clean.split(' ');
 
-      result.push({
-        value: char,
-        src: `/sign/${char}.gif`, // ⚠️ YOUR FOLDER
-      });
+    words.forEach((word, index) => {
+      if (!word) return;
+
+      // ✅ WORD GIF EXISTS
+      if (wordGifs.includes(word)) {
+        result.push({
+          value: word,
+          src: `/sign/${word}.gif`,
+        });
+      } else {
+        // 🔁 FALLBACK TO LETTERS
+        word.split('').forEach((char) => {
+          result.push({
+            value: char,
+            src: `/sign/${char}.gif`,
+          });
+        });
+      }
+
+      // ⏸️ ADD PAUSE BETWEEN WORDS (except last)
+      if (index !== words.length - 1) {
+        result.push({
+          value: 'pause',
+          src: null,
+        });
+      }
     });
 
     setSequence(result);
@@ -60,7 +94,6 @@ function TextTranslator({ language }) {
   /////////////////////////
   // ▶️ PLAYER ENGINE
   /////////////////////////
-
   useEffect(() => {
     if (!isPlaying || sequence.length === 0) return;
 
@@ -71,7 +104,7 @@ function TextTranslator({ language }) {
           return prev + 1;
         });
         play();
-      }, 1500); // 🔥 PERFECT SPEED
+      }, 1500);
     }
 
     play();
@@ -82,7 +115,6 @@ function TextTranslator({ language }) {
   /////////////////////////
   // 🧹 CLEAR
   /////////////////////////
-
   const handleClear = () => {
     setInputText('');
     setTranslatedText('');
@@ -95,10 +127,10 @@ function TextTranslator({ language }) {
   /////////////////////////
   // 🎨 UI
   /////////////////////////
-
   return (
     <div className="text-translator">
       <div className="translator-card">
+        {/* INPUT SECTION */}
         <div className="input-section">
           <div className="section-header">
             <h3>{language === 'mr' ? 'इनपुट मजकूर' : 'Input Text'}</h3>
@@ -147,6 +179,7 @@ function TextTranslator({ language }) {
           </div>
         </div>
 
+        {/* OUTPUT SECTION */}
         <div className="output-section">
           {/* 🔤 TRANSLATION */}
           <div className="translation-output">
@@ -185,15 +218,19 @@ function TextTranslator({ language }) {
 
             {sequence.length > 0 ? (
               <div style={{ textAlign: 'center', marginTop: '10px' }}>
-                <img
-                  key={currentIndex}
-                  src={sequence[currentIndex].src}
-                  alt="sign"
-                  style={{ width: '120px', height: '120px' }}
-                  onError={(e) => {
-                    console.log('Missing:', sequence[currentIndex].src);
-                  }}
-                />
+                {sequence[currentIndex].src ? (
+                  <img
+                    key={currentIndex}
+                    src={sequence[currentIndex].src}
+                    alt="sign"
+                    style={{ width: '120px', height: '120px' }}
+                    onError={() =>
+                      console.log('Missing:', sequence[currentIndex].src)
+                    }
+                  />
+                ) : (
+                  <div style={{ height: '120px' }}></div> // ⏸️ pause space
+                )}
               </div>
             ) : (
               <div className="empty-output">
